@@ -8,21 +8,21 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class flowFX extends Application {
+public class FlowFX extends Application {
+	
+//	private TitleBar titleBar = new TitleBar();
+	private BorderPane root = new BorderPane();
+	private VideoGrid grid = new VideoGrid();
+	
 
 	@Override
 	public void start(Stage window) {
 		window.initStyle(StageStyle.UNDECORATED);
 		
-		HBox topBox = new HBox();
-		topBox.getChildren().add(new Button());
-//		topBox.setMinWidth(100);
-//		topBox.setMinHeight(100);
-		topBox.setStyle("-fx-background-color: #0000ff;");;
+		root.setStyle("-fx-background-color: #252629;");
+//		root.setTop(titleBar.getNode());
+		root.getChildren().addAll(grid.getNode());
 		
-		BorderPane root = new BorderPane();
-		
-		root.getChildren().addAll(topBox);	
 		Scene mainScene = new Scene(root, 1280, 720);
 		
 		window.setScene(mainScene);
