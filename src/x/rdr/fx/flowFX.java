@@ -36,7 +36,7 @@ public class FlowFX extends Application {
 		window.setScene(mainScene);
 		window.show();
 		
-		System.out.println("lolololololololol");
+		
 		
 	}
 
