@@ -1,4 +1,3 @@
-
 package x.rdr;
 
 import java.io.IOException;
@@ -32,7 +31,8 @@ public class Search {
 	private static final String QUERY = "Yogscast";
 	private static final long VIDEONUMBER = 30;
 	
-	private SearchListResponse searchResponse;
+	
+	private static SearchListResponse searchResponse;
 	
 	private static List<Thumbnail> thumbnails = new ArrayList<>();
 	private static List<String> ids = new ArrayList<>(); 
@@ -62,8 +62,7 @@ public class Search {
             properties.load(prop);
 
         } catch (IOException e) {
-            System.err.println("Error! Couldn't read '" + PROPERTIES_FILENAME 
-            		+ ". Reason: " + e.getCause()
+            System.err.println("Error! Couldn't read '" + PROPERTIES_FILENAME + ". Reason: " + e.getCause()
                     + " : " + e.getMessage());
             System.exit(1);
         }
@@ -79,6 +78,7 @@ public class Search {
             }).setApplicationName("youtube-cmdline-search-sample").build();
 
             // Prompt the user to enter a query term.
+
             // Define the API request for retrieving search results.
             YouTube.Search.List search = youtube.search().list("id,snippet");
 
@@ -100,17 +100,15 @@ public class Search {
             search.setMaxResults(VIDEONUMBER);
 
             // Call the API and print results.
-            System.out.println("page: " + page);
-            if(page == 5) {
-            	searchResponse = search.execute();
+            System.out.println("Page: " + page);
+            
+            if(page != 1) {
 //            	System.out.println(searchResponse.getNextPageToken());
-//            	search.setPageToken(searchResponse.getNextPageToken());
-//              searchResponse = search.execute();
-            } else {
-            	searchResponse = search.execute();
-                search.setPageToken(searchResponse.getNextPageToken());
-            	searchResponse = search.execute();
-            }     
+            	search.setPageToken(searchResponse.getNextPageToken());
+            }
+            
+            
+            searchResponse = search.execute();
             
             List<SearchResult> searchResultList = searchResponse.getItems();
             
