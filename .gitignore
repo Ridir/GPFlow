@@ -44,4 +44,4 @@ Temporary Items
 
 # Custom files/directories
 .google_apis/
-bin/
+lib/
