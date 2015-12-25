@@ -1,5 +1,5 @@
 package x.rdr;
 
-public class main {
+public class Main {
 
 }

@@ -29,15 +29,16 @@ public class Search {
      * contains the developer's API key.
      */
     private static final String PROPERTIES_FILENAME = "youtube.properties";
-	private static final String QUERY = "Yogscast";
+	private static final String QUERY = "Worlds 2015";
 	private static final long VIDEONUMBER = 30;
 	
-	private SearchListResponse searchResponse;
+	private static SearchListResponse searchResponse;
+	private static YouTube.Search.List search;
 	
 	private static List<Thumbnail> thumbnails = new ArrayList<>();
 	private static List<String> ids = new ArrayList<>(); 
 	
-	private int i = 0;
+	private static int i = 0;
 	private static int page = 0;
     /**
      * Define a global instance of a Youtube object, which will be used
@@ -73,54 +74,47 @@ public class Search {
             // argument is required, but since we don't need anything
             // initialized when the HttpRequest is initialized, we override
             // the interface and provide a no-op function.
-            youtube = new YouTube.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), new HttpRequestInitializer() {
-                public void initialize(HttpRequest request) throws IOException {
-                }
-            }).setApplicationName("youtube-cmdline-search-sample").build();
-
-            // Prompt the user to enter a query term.
-            // Define the API request for retrieving search results.
-            YouTube.Search.List search = youtube.search().list("id,snippet");
-
-            // Set your developer key from the Google Developers Console for
-            // non-authenticated requests. See:
-            // https://console.developers.google.com/
-            String apiKey = properties.getProperty("apikey");
-            System.out.println(apiKey);
-            search.setKey(apiKey);
-            search.setQ(QUERY);
-
-            // Restrict the search results to only include videos. See:
-            // https://developers.google.com/youtube/v3/docs/search/list#type
-            search.setType("video");
-
-            // To increase efficiency, only retrieve the fields that the
-            // application uses.
-            search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url),nextPageToken");
-            search.setMaxResults(VIDEONUMBER);
-
+        	if(page == 1) {
+	            youtube = new YouTube.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), new HttpRequestInitializer() {
+	                public void initialize(HttpRequest request) throws IOException {
+	                }
+	            }).setApplicationName("youtube-cmdline-search-sample").build();
+	
+	            // Prompt the user to enter a query term.
+	            // Define the API request for retrieving search results.
+	            search = youtube.search().list("id,snippet");
+	
+	            // Set your developer key from the Google Developers Console for
+	            // non-authenticated requests. See:
+	            // https://console.developers.google.com/
+	            String apiKey = properties.getProperty("apikey");
+	            System.out.println(apiKey);
+	            search.setKey(apiKey);
+	            search.setQ(QUERY);
+	
+	            // Restrict the search results to only include videos. See:
+	            // https://developers.google.com/youtube/v3/docs/search/list#type
+	            search.setType("video");
+	
+	            // To increase efficiency, only retrieve the fields that the
+	            // application uses.
+	            search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url),nextPageToken");
+	            search.setMaxResults(VIDEONUMBER);
+        	}
+        	
             // Call the API and print results.
-            System.out.println("page: " + page);
-            if(page == 5) {
-            	searchResponse = search.execute();
-//            	System.out.println(searchResponse.getNextPageToken());
-//            	search.setPageToken(searchResponse.getNextPageToken());
-//              searchResponse = search.execute();
-            } else {
-            	searchResponse = search.execute();
-                search.setPageToken(searchResponse.getNextPageToken());
-            	searchResponse = search.execute();
-            }     
+        	System.out.println(search.getPageToken());
+            searchResponse = search.execute();
             
             List<SearchResult> searchResultList = searchResponse.getItems();
             
             // Fill list with thumbnails 
-            for(; i < searchResultList.size(); i++) {
-            	SearchResult video = searchResultList.get(i);
+            for(int j = 0; j < searchResultList.size(); j++, i++) {
+            	SearchResult video = searchResultList.get(j);
             	ids.add(i, video.getId().getVideoId());
-//            	System.out.println(video);
-//    	    	thumbnails.add(i, video.getSnippet().getThumbnails().getMaxres());
             }
+            
+            search.setPageToken(searchResponse.getNextPageToken());
             
         } catch (GoogleJsonResponseException e) {
             System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
