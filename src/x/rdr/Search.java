@@ -130,7 +130,7 @@ public class Search {
     public Thumbnail getThumbnail(int index) {
     	return thumbnails.get(index);
     }
-    public String getId(int index) {
+    public static String getId(int index) {
     	return ids.get(index);
     }
     public static long getVideoNumber() {

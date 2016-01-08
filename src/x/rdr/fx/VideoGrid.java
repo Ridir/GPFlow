@@ -146,6 +146,11 @@ public class VideoGrid {
 		return ans; 
 	}
 	
+	public void playVideoFromCoord(int x, int y) {
+		int numberInLine = getNumberInLine(x, y);
+		VideoPlayer.load(Search.getId(numberInLine));
+	}
+	
 	public Node getNode() {
 		return sp;
 	}
