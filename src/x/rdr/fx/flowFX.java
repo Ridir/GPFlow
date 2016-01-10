@@ -10,10 +10,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import x.rdr.Input;
+import x.rdr.fx.css.Effects;
 
 public class FlowFX extends Application {
 	
-//	private TitleBar titleBar = new TitleBar();
+	//	All objects later used are created as static here for future reference.
 	private static BorderPane root = new BorderPane();
 	private static BorderPane view = new BorderPane();
 	private static Scene mainScene = new Scene(root, 1280, 720);
@@ -22,43 +23,59 @@ public class FlowFX extends Application {
 
 	@Override
 	public void start(Stage window) {
+		
+		//	Saves whatever window is entered to the static window variable
 		FlowFX.window = window;
 		
-//		VideoPlayer.make();
-//		VideoPlayer.load("dFdljB_Bcx0");
+		//	Creates a grid containing thumbnails.
 		VideoGrid videos = new VideoGrid();
 		
-		root.setStyle("-fx-background-color: #252629;");
+		//	Sets the background color and fills each scene with fitting content.
+		Effects.darken(root);
+		Effects.darken(view);
 		root.setCenter(videos.getNode());
-		
-		view.setStyle("-fx-background-color: #252629;");
 		view.setCenter(VideoPlayer.getNode());
 		
+		//	Removes any bars from the window.
 		window.initStyle(StageStyle.UNDECORATED);
+		
+		//	Sets the main "grid" scene as the first scene and makes it visible.
 		window.setScene(mainScene);
 		window.show();
 		
+		//	Checks keyboard for input in both scenes
 		Input.keyboard(mainScene, videos);
-		Input.keyboard(videoScene, videos);
+		Input.keyboardVideo(videoScene, videos);
+		//	TODO: Controller input
+		
 	}
 	
+	//	Changes the scene of window to whatever scene is given.
 	public static void changeScene(Scene scene) {
 		view.setCenter(VideoPlayer.getNode());
 		window.setScene(scene);
 	}
 	
+	//	Returns whatever scene is currently being displayed.
 	public static Scene getActiveScene() {
 		return window.getScene();
 	}
 	
+	//	Returns videoScene.
 	public static Scene getVideoScene() {
 		return videoScene;
 	}
 	
+	//	Returns mainScene.
 	public static Scene getMainScene() {
 		return mainScene;
 	}
-
+	
+	public static BorderPane getRoot() {
+		return root;
+	}
+	
+	//	From here the application boots.
 	public static void main(String[] args) throws IOException {
 		launch(args);
 	}

@@ -1,5 +1,6 @@
-
 package x.rdr;
+
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +30,8 @@ public class Search {
      * contains the developer's API key.
      */
     private static final String PROPERTIES_FILENAME = "youtube.properties";
-	private static final String QUERY = "Worlds 2015";
 	private static final long VIDEONUMBER = 30;
+	private static String QUERY = "Worlds 2015";
 	
 	private static SearchListResponse searchResponse;
 	private static YouTube.Search.List search;
@@ -52,11 +53,19 @@ public class Search {
      *
      * @param args command line args.
      */
-    public Search() {
+    public Search(String query) {
     	
+    	//	Resets page count if a new query is given.
+    	if(query != QUERY) {
+    		page = 0;
+    	}
+    	
+    	QUERY = query;
+    	
+    	//	Increases the page number so that any videoinfo is saved to the correct index of any lists.
         page++;
         
-        // Read the developer key from the properties file.
+        // Reads the developer key from the properties file.
         Properties properties = new Properties();
         try {
             InputStream prop = this.getClass().getClassLoader().getResourceAsStream("info/" + PROPERTIES_FILENAME);
@@ -126,19 +135,27 @@ public class Search {
         }
     }
 
-    
+    //	Returns the thumbnail allocated to said index.
     public Thumbnail getThumbnail(int index) {
     	return thumbnails.get(index);
     }
+    
+    //	Returns the id allocated to said index.
     public static String getId(int index) {
     	return ids.get(index);
     }
+    
+    //	Returns VIDEONUMBER, the amount of videos per page.
     public static long getVideoNumber() {
     	return VIDEONUMBER;
     }
+    
+    //	Returns the total amount of videos loaded as of yet.
     public static long getVideosLoaded() {
     	return (page * VIDEONUMBER);
     }
+    
+    //	Returns the searched String.
 	public String getQuery() {
 		return QUERY;
 	}

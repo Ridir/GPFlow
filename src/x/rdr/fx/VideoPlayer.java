@@ -1,6 +1,7 @@
 package x.rdr.fx;
 
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,6 +23,7 @@ public class VideoPlayer {
 	}
 
 	public static void load(String videoID) {
+		
 		//	The application will return an error message if the youtube-dl component fails.
 		try {
 			
@@ -52,6 +54,7 @@ public class VideoPlayer {
 		
 	}
 	
+	//	Configures whatever need configuring.
 	public static void config() {
 		playbackView.fitWidthProperty().bind(Bindings.selectDouble(playbackView.sceneProperty(), "width"));
 		playbackView.fitHeightProperty().bind(Bindings.selectDouble(playbackView.sceneProperty(), "height"));
@@ -59,10 +62,12 @@ public class VideoPlayer {
 		playbackView.setPreserveRatio(true);
 	}
 	
+	//	Returns the node of the videoplayer.
 	public static Node getNode() {
 		return playbackView;
 	}
 	
+	//	Pauses the playback, for use in other classes.
 	public static void pause() {
 		playback.pause();
 	}

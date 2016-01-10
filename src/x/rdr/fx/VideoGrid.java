@@ -1,5 +1,7 @@
 package x.rdr.fx;
 
+
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -41,7 +43,7 @@ public class VideoGrid {
 		config();
 		
 		// TODO
-		load(new Search());
+		load(new Search("Worlds 2015"));
 		
 		// Highlight() workaround
 		int i = this.getNumberInLine(0, 0);
@@ -53,7 +55,9 @@ public class VideoGrid {
 	
 
 	
-// MAY GOD FORGIVE THIS FUNCTION
+/*	This function isn't optimal although difficult to improve
+  	Just leave it be and let it do its thing.
+  	It loads more videos from a search.	*/
 	private void load(Search search) {
 		
 		int d = (int) (Search.getVideosLoaded() - Search.getVideoNumber());
@@ -63,7 +67,7 @@ public class VideoGrid {
 			
 			try {
 				
-				url = new URL("http://i1.ytimg.com/vi/" + search.getId(i) + "/0.jpg");
+				url = new URL("http://i1.ytimg.com/vi/" + Search.getId(i) + "/0.jpg");
 				bImg = ImageIO.read(url).getSubimage(0, 45, 480, 270);
 				
 			} catch (MalformedURLException e) {
@@ -84,7 +88,7 @@ public class VideoGrid {
 			thumbArray.add(img);
 		}
 		
-		this.addImages(thumbArray);
+		this.addImages(thumbArray, thumbs);
 		
 		System.out.println("2. " + thumbs.size());
 		
@@ -96,6 +100,7 @@ public class VideoGrid {
 		sp.setContent(grid);
 	}
 	
+	//	Puts the css highlight effect upon the thumbnail at given x-y coordinate and removes it from the previous.
 	public void highlight(VideoGrid grid, int x, int y) {
 		
 		int i = grid.getNumberInLine(x, y);
@@ -104,29 +109,30 @@ public class VideoGrid {
 			Effects.brighten(grid.thumbs.get(i), 0.2);
 		} 
 		catch(IndexOutOfBoundsException oob) {
-			this.load(new Search());
+			//	TODO
+			this.load(new Search("Worlds 2015"));
 		}
 		
 		j = i;
 		
 	}
 	
-	private void addImages(ArrayList<Image> imgArray) {
+	//	Adds each image from an array of images to its own imageview and inserts that into an array of imageviews.
+	private void addImages(ArrayList<Image> imgArray, ArrayList<ImageView> imgViewArray) {
 		
 		for(int i = (int) (Search.getVideosLoaded() - Search.getVideoNumber()); i < imgArray.size(); i++) {
 			
 			ImageView j = new ImageView();
 			j.setFitWidth(THUMBNAIL_WIDTH);
 			j.setFitHeight(THUMBNAIL_HEIGHT);
-			this.thumbs.add(i, j);
-			this.thumbs.get(i).setImage(imgArray.get(i));
+			imgViewArray.add(i, j);
+			imgViewArray.get(i).setImage(imgArray.get(i));
 			
 		}
 		
-		System.out.println("1. " + thumbs.size());
-		
 	}
 	
+	//	Configures all objects that need its style changed for whatever reason.
 	private void config() {
 		sp.setPadding(new Insets(0, 0, 0, 80));
 		sp.setPrefWidth(1200);
@@ -141,16 +147,19 @@ public class VideoGrid {
 		grid.setPrefWidth(720);
 	}
 	
+	//	Converts coordinates to index of array.
 	private int getNumberInLine(int x, int y) {
 		int ans = 5 * y + x;
 		return ans; 
 	}
 	
+	//	Loads a video at given coord.
 	public void playVideoFromCoord(int x, int y) {
 		int numberInLine = getNumberInLine(x, y);
 		VideoPlayer.load(Search.getId(numberInLine));
 	}
 	
+	//	Returns the node for the scrollable grid of videos.
 	public Node getNode() {
 		return sp;
 	}
