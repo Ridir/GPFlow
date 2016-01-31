@@ -8,6 +8,7 @@ import javafx.scene.input.KeyEvent;
 import x.rdr.fx.FlowFX;
 import x.rdr.fx.SearchBox;
 import x.rdr.fx.VideoGrid;
+import x.rdr.fx.css.Effects;
 
 public class Input {
 	
@@ -52,7 +53,9 @@ public class Input {
 		    }
 		    
 		    if(key.getCode()==KeyCode.L) {
-		    	FlowFX.getRoot().setTop(new SearchBox("Search", 1000));
+		    	SearchBox searchBox = new SearchBox("", 1000);
+		    	searchBox.setStyle("-fx-background-color: #37393D;");
+		    	FlowFX.getRoot().setTop(searchBox);
 		    	System.out.println("Made SearchBox");
 		    }
 

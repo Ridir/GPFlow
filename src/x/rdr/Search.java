@@ -53,6 +53,7 @@ public class Search {
      *
      * @param args command line args.
      */
+    
     public Search(String query) {
     	
     	//	Resets page count if a new query is given.

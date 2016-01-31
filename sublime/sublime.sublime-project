@@ -1,0 +1,19 @@
+{
+	"folders":
+	[
+		{
+			"path": "D:/Libraries/Documents/Workspaces/GPFlow/"
+		}
+	],
+    "SublimeLinter":
+    {
+    	"linters":
+    	{
+            "javac":
+            {
+            	"chdir": "D:/Libraries/Documents/Workspaces/GPFlow/src",
+                "args": "-classpath ../.google_apis/youtube-v3r152lv1.18.0-rc/youtube/libs/*;../.google_apis/youtube-v3r152lv1.18.0-rc/youtube/*;."                
+            }
+    	}
+    }
+}

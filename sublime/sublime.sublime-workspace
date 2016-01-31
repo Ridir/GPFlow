@@ -1,0 +1,429 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"youtube",
+				"youtube-v3r152lv1"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/x/rdr/fx/FlowFX.java",
+			"settings":
+			{
+				"buffer_size": 2105,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "package x.rdr;  \n\n\n\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Properties;\n\nimport com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;\nimport com.google.api.client.googleapis.json.GoogleJsonResponseException;\nimport com.google.api.client.http.HttpRequest;\nimport com.google.api.client.http.HttpRequestInitializer;\nimport com.google.api.client.json.jackson2.JacksonFactory;\nimport com.google.api.services.youtube.YouTube;\nimport com.google.api.services.youtube.model.SearchListResponse;\nimport com.google.api.services.youtube.model.SearchResult;\nimport com.google.api.services.youtube.model.Thumbnail;\n\n/**\n * Print a list of videos matching a search term.\n *\n * @author Jeremy Walker\n */\npublic class Search {\n\n    /**\n     * Define a global variable that identifies the name of a file that\n     * contains the developer's API key.\n     */\n    private static final String PROPERTIES_FILENAME = \"youtube.properties\";\n	private static final long VIDEONUMBER = 30;\n	private static String QUERY = \"Worlds 2015\";\n	\n	private static SearchListResponse searchResponse;\n	private static YouTube.Search.List search;\n	\n	private static List<Thumbnail> thumbnails = new ArrayList<>();\n	private static List<String> ids = new ArrayList<>(); \n	\n	private static int i = 0;\n	private static int page = 0;\n    /**\n     * Define a global instance of a Youtube object, which will be used\n     * to make YouTube Data API requests.\n     */\n    private static YouTube youtube;\n\n    /**\n     * Initialize a YouTube object to search for videos on YouTube. Then\n     * display the name and thumbnail image of each video in the result set.\n     *\n     * @param args command line args.\n     */\n    \n    public Search(String query) {\n    	\n    	//	Resets page count if a new query is given.\n    	if(query != QUERY) {\n    		page = 0;\n    	}\n    	\n    	QUERY = query;\n    	\n    	//	Increases the page number so that any videoinfo is saved to the correct index of any lists.\n        page++;\n        \n        // Reads the developer key from the properties file.\n        Properties properties = new Properties();\n        try {\n            InputStream prop = this.getClass().getClassLoader().getResourceAsStream(\"info/\" + PROPERTIES_FILENAME);\n            properties.load(prop);\n\n        } catch (IOException e) {\n            System.err.println(\"Error! Couldn't read '\" + PROPERTIES_FILENAME \n            		+ \". Reason: \" + e.getCause()\n                    + \" : \" + e.getMessage());\n            System.exit(1);\n        }\n\n        try {\n            // This object is used to make YouTube Data API requests. The last\n            // argument is required, but since we don't need anything\n            // initialized when the HttpRequest is initialized, we override\n            // the interface and provide a no-op function.\n        	if(page == 1) {\n	            youtube = new YouTube.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), new HttpRequestInitializer() {\n	                public void initialize(HttpRequest request) throws IOException {\n	                }\n	            }).setApplicationName(\"youtube-cmdline-search-sample\").build();\n	\n	            // Prompt the user to enter a query term.\n	            // Define the API request for retrieving search results.\n	            search = youtube.search().list(\"id,snippet\");\n	\n	            // Set your developer key from the Google Developers Console for\n	            // non-authenticated requests. See:\n	            // https://console.developers.google.com/\n	            String apiKey = properties.getProperty(\"apikey\");\n	            System.out.println(apiKey);\n	            search.setKey(apiKey);\n	            search.setQ(QUERY);\n	\n	            // Restrict the search results to only include videos. See:\n	            // https://developers.google.com/youtube/v3/docs/search/list#type\n	            search.setType(\"video\");\n	\n	            // To increase efficiency, only retrieve the fields that the\n	            // application uses.\n	            search.setFields(\"items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url),nextPageToken\");\n	            search.setMaxResults(VIDEONUMBER);\n        	}\n        	\n            // Call the API and print results.\n        	System.out.println(search.getPageToken());\n            searchResponse = search.execute();\n            \n            List<SearchResult> searchResultList = searchResponse.getItems();\n            \n            // Fill list with thumbnails \n            for(int j = 0; j < searchResultList.size(); j++, i++) {\n            	SearchResult video = searchResultList.get(j);\n            	ids.add(i, video.getId().getVideoId());\n            }\n            \n            search.setPageToken(searchResponse.getNextPageToken());\n            \n        } catch (GoogleJsonResponseException e) {\n            System.err.println(\"There was a service error: \" + e.getDetails().getCode() + \" : \"\n                    + e.getDetails().getMessage());\n        } catch (IOException e) {\n            System.err.println(\"There was an IO error: \" + e.getCause() + \" : \" + e.getMessage());\n        } catch (Throwable t) {\n            t.printStackTrace();\n        }\n    }\n\n    //	Returns the thumbnail allocated to said index.\n    public Thumbnail getThumbnail(int index) {\n    	return thumbnails.get(index);\n    }\n    \n    //	Returns the id allocated to said index.\n    public static String getId(int index) {\n    	return ids.get(index);\n    }\n    \n    //	Returns VIDEONUMBER, the amount of videos per page.\n    public static long getVideoNumber() {\n    	return VIDEONUMBER;\n    }\n    \n    //	Returns the total amount of videos loaded as of yet.\n    public static long getVideosLoaded() {\n    	return (page * VIDEONUMBER);\n    }\n    \n    //	Returns the searched String.\n	public String getQuery() {\n		return QUERY;\n	}\n}",
+			"file": "src/x/rdr/Search.java",
+			"file_size": 6067,
+			"file_write_time": 130987314810250230,
+			"settings":
+			{
+				"buffer_size": 5907,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "Packages/Build/FlowFXJava.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Java/Ant.sublime-build",
+					""
+				],
+				[
+					"Packages/Java/JavaC.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/Java/JavaC.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Java/Ant.sublime-build",
+					""
+				],
+				[
+					"Packages/Java/JavaC.sublime-build",
+					""
+				],
+				[
+					"Packages/Build/FlowFXJava.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/Build/FlowFXJava.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Java/Ant.sublime-build",
+					""
+				],
+				[
+					"Packages/Java/JavaC.sublime-build",
+					""
+				],
+				[
+					"Packages/Build/Java.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/Build/Java.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 219.0,
+		"last_filter": "instal",
+		"selected_items":
+		[
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"SublimeLinter",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"Lint thi",
+				"SublimeLinter: Lint This View"
+			],
+			[
+				"sublimeLinter",
+				"SublimeLinter: Lint This View"
+			],
+			[
+				"remov",
+				"Package Control: Remove Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"remv",
+				"Package Control: Remove Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"sublimelinter",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"sublime",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"Sublim",
+				"SublimeLinter: Choose Mark Style"
+			],
+			[
+				"Subl",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"linter: de",
+				"SublimeLinter: Enable Debug Mode"
+			],
+			[
+				"lint",
+				"SublimeLinter: Toggle Linter"
+			],
+			[
+				"li",
+				"SublimeLinter: Toggle Linter"
+			],
+			[
+				"sub",
+				"SublimeLinter: Toggle Linter"
+			],
+			[
+				"linter",
+				"Preferences: SublimeLinter Settings – Default"
+			],
+			[
+				"javatar",
+				"Javatar: Browse Commands..."
+			]
+		],
+		"width": 416.0
+	},
+	"console":
+	{
+		"height": 136.0,
+		"history":
+		[
+			"upgrade",
+			"update",
+			"npm install -g eslint",
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/Libraries/Documents/Workspaces/GPFlow",
+		"/D/Libraries/Documents/Workspaces/GPFlow/src",
+		"/D/Libraries/Documents/Workspaces/GPFlow/src/x",
+		"/D/Libraries/Documents/Workspaces/GPFlow/src/x/rdr"
+	],
+	"file_history":
+	[
+		"/C/Users/Reader/AppData/Roaming/Sublime Text 3/Packages/User/Default.sublime-theme",
+		"/D/Libraries/Documents/Workspaces/GPFlow/sublime.sublime-project",
+		"/C/Users/Reader/AppData/Roaming/Sublime Text 3/Packages/Build/Java.sublime-build",
+		"/C/Users/Reader/AppData/Roaming/Sublime Text 3/Packages/Build/buildJava.bat",
+		"/D/Libraries/Documents/Workspaces/GPFlow/src/x/rdr/Search.java",
+		"/C/Users/Reader/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/D/Libraries/Documents/Workspaces/GPFlow/.classpath",
+		"/C/Users/Reader/AppData/Roaming/Sublime Text 3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"/C/Users/Reader/AppData/Roaming/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
+		"/C/Users/Reader/Desktop/temp.css",
+		"/D/Libraries/Documents/Workspaces/GPFlow/src/x/rdr/Main.java",
+		"/C/Users/Reader/AppData/Roaming/Sublime Text 3/Packages/User/Package Control.sublime-settings",
+		"/C/Users/Reader/AppData/Roaming/Sublime Text 3/Packages/Package Control/Package Control.sublime-settings",
+		"/C/Users/Reader/Desktop/temp.java",
+		"/D/Libraries/Documents/Workspaces/GPFlow/sublime.sublime-workspace",
+		"/D/Libraries/Documents/Workspaces/Python/PythonCode/sound.py",
+		"/C/Users/Reader/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
+		"/D/Libraries/Documents/Workspaces/GPFlow/.gitignore",
+		"/D/Libraries/Documents/Workspaces/GPFlow/.project",
+		"/D/Libraries/Documents/Workspaces/GPFlow/.gitattributes",
+		"/D/Libraries/Documents/Workspaces/GPFlow/bin/.gitignore",
+		"/C/Users/Reader/AppData/Local/Temp/Temp1_google-api-client-assembly-1.20.0-1.20.0.zip/google-api-java-client/classpath-include"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"\\",
+			"package x.rdr;\n\n\n\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Properties;\n\nimport com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;\nimport com.google.api.client.googleapis.json.GoogleJsonResponseException;\nimport com.google.api.client.http.HttpRequest;\nimport com.google.api.client.http.HttpRequestInitializer;\nimport com.google.api.client.json.jackson2.JacksonFactory;\nimport com.google.api.services.youtube.YouTube;\nimport com.google.api.services.youtube.model.SearchListResponse;\nimport com.google.api.services.youtube.model.SearchResult;\nimport com.google.api.services.youtube.model.Thumbnail;\n\n/**\n * Print a list of videos matching a search term.\n *\n * @author Jeremy Walker\n */\npublic class Search {\n\n    /**\n     * Define a global variable that identifies the name of a file that\n     * contains the developer's API key.\n     */\n    private static final String PROPERTIES_FILENAME = \"youtube.properties\";\n	private static final long VIDEONUMBER = 30;\n	private static String QUERY = \"Worlds 2015\";\n	\n	private static SearchListResponse searchResponse;\n	private static YouTube.Search.List search;\n	\n	private static List<Thumbnail> thumbnails = new ArrayList<>();\n	private static List<String> ids = new ArrayList<>(); \n	\n	private static int i = 0;\n	private static int page = 0;\n    /**\n     * Define a global instance of a Youtube object, which will be used\n     * to make YouTube Data API requests.\n     */\n    private static YouTube youtube;\n\n    /**\n     * Initialize a YouTube object to search for videos on YouTube. Then\n     * display the name and thumbnail image of each video in the result set.\n     *\n     * @param args command line args.\n     */\n    \n    public Search(String query) {\n    	\n    	//	Resets page count if a new query is given.\n    	if(query != QUERY) {\n    		page = 0;\n    	}\n    	\n    	QUERY = query;\n    	\n    	//	Increases the page number so that any videoinfo is saved to the correct index of any lists.\n        page++;\n        \n        // Reads the developer key from the properties file.\n        Properties properties = new Properties();\n        try {\n            InputStream prop = this.getClass().getClassLoader().getResourceAsStream(\"info/\" + PROPERTIES_FILENAME);\n            properties.load(prop);\n\n        } catch (IOException e) {\n            System.err.println(\"Error! Couldn't read '\" + PROPERTIES_FILENAME \n            		+ \". Reason: \" + e.getCause()\n                    + \" : \" + e.getMessage());\n            System.exit(1);",
+			"     \"Java\":\n        {\n            \"working_directory\": \"D:/Libraries/Documents/Workspaces/GPFlow/\",\n\n            \"lint_args\":\n            [\n                \"-sourcepath\", \"src\",\n                \"-classpath\", \"./.google_apis/youtube-v3r152lv1.18.0-rc/youtube/libs/*;./.google_apis/youtube-v3r152lv1.18.0-rc/youtube/*\",\n                \"-Xlint\", \"-Xlint:-serial\",\n                \"{filename}\"\n            ]\n        }",
+			"\\",
+			"{\n	\"folders\":\n	[\n		{\n			\"path\": \".\"\n		}\n	]\n}\n",
+			"\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Properties;\n\nimport com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;\nimport com.google.api.client.googleapis.json.GoogleJsonResponseException;\nimport com.google.api.client.http.HttpRequest;\nimport com.google.api.client.http.HttpRequestInitializer;\nimport com.google.api.client.json.jackson2.JacksonFactory;\nimport com.google.api.services.youtube.YouTube;\nimport com.google.api.services.youtube.model.SearchListResponse;\nimport com.google.api.services.youtube.model.SearchResult;\nimport com.google.api.services.youtube.model.Thumbnail;",
+			"	]\n}\n",
+			"ctrl+h"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/x/rdr/fx/FlowFX.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2105,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								641,
+								641
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/x/rdr/Search.java",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5907,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1318,
+								1318
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": false,
+	"output.exec":
+	{
+		"height": 100.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "sublime.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 209.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
