@@ -45,3 +45,5 @@ Temporary Items
 # Custom files/directories
 .google_apis/
 lib/
+.classpath
+sublime/
